@@ -1,6 +1,8 @@
 #AdAway Hosts
 
-This application will pull down and merge host files from various sources to block ads and security vulnerable websites and add them all to your existing hosts file. 
+This application will pull down and merge host files from various sources to block ads and security vulnerable websites and add them all to your existing hosts file.
+
+Run this application periodically to get updates
 
 ###Ads hosts files
 
