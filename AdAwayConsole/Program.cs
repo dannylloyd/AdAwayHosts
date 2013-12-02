@@ -5,6 +5,7 @@ using System.Text;
 using System.IO;
 using System.Net;
 using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace AdAwayConsole
 {
@@ -23,7 +24,6 @@ namespace AdAwayConsole
                     "http://someonewhocares.org/hosts/hosts"
                 };
 
-            var client = new System.Net.WebClient();
             var hostsFile = new StringBuilder();
 
             var options = new HostFileOptions()
@@ -45,19 +45,19 @@ namespace AdAwayConsole
                 };
             }
 
-            if (options.BlockSecurity)
-                foreach (var source in securitySources)
-                {
-                    Console.WriteLine("Downloading {0}", source);
-                    hostsFile.Append(client.DownloadString(source));
-                }
+            var sources = new List<string>();
 
             if (options.BlockAds)
-                foreach (var source in adSources)
-                {
-                    Console.WriteLine("Downloading {0}", source);
-                    hostsFile.Append(client.DownloadString(source));
-                }
+                sources.AddRange(adSources);
+
+            if (options.BlockSecurity)
+                sources.AddRange(securitySources);
+
+            Parallel.ForEach<string>(sources, f =>
+            {
+                Console.WriteLine("Downloading {0}", f);
+                hostsFile.Append(new System.Net.WebClient().DownloadString(f));
+            });
 
             //Build a new hosts file by removing extra crap and duplicate locahost declarations
             var newHostsFile = new StringBuilder();
