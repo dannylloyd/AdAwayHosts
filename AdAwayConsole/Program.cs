@@ -53,10 +53,22 @@ namespace AdAwayConsole
             if (options.BlockSecurity)
                 sources.AddRange(securitySources);
 
+            var webClient = new System.Net.WebClient();
+            webClient.Credentials = System.Net.CredentialCache.DefaultCredentials;
+            webClient.Proxy.Credentials = System.Net.CredentialCache.DefaultCredentials;
+
             Parallel.ForEach<string>(sources, f =>
             {
                 Console.WriteLine("Downloading {0}", f);
-                hostsFile.Append(new System.Net.WebClient().DownloadString(f));
+                try
+                {
+                    var file = new System.Net.WebClient().DownloadString(f);
+                    hostsFile.Append(file);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                }
             });
 
             //Build a new hosts file by removing extra crap and duplicate locahost declarations
